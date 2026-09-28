@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
+<title>Kuis Peluang Kejadian Majemuk - Bimbingan Belajar Bionic</title>
+<style>
+  :root{
+    --navy:#0B1F3A;
+    --navy-2:#123058;
+    --gold:#C9A227;
+    --gold-light:#F3E6BE;
+    --bg:#F4F6FA;
+    --card-bg:#FFFFFF;
+    --text:#1B2430;
+    --text-muted:#5B6472;
+    --border:#E1E5EC;
+    --danger:#B4232A;
+    --danger-bg:#FCE8E8;
+    --success:#1E7A46;
+    --success-bg:#E7F5EC;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#0D1420;
+      --card-bg:#16233A;
+      --text:#EAF0FB;
+      --text-muted:#9FB0C7;
+      --border:#25344E;
+      --gold-light:#3A331A;
+      --danger-bg:#3A1414;
+      --success-bg:#12321F;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#0D1420;
+    --card-bg:#16233A;
+    --text:#EAF0FB;
+    --text-muted:#9FB0C7;
+    --border:#25344E;
+    --gold-light:#3A331A;
+    --danger-bg:#3A1414;
+    --success-bg:#12321F;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    min-height:100vh;
+  }
+  .topbar{
+    background:linear-gradient(135deg, var(--navy), var(--navy-2));
+    color:#fff;
+    padding:14px 18px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:8px;
+    border-bottom:3px solid var(--gold);
+  }
+  .topbar .brand{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-weight:700;
+    letter-spacing:.3px;
+  }
+  .brand .dot{
+    width:10px;height:10px;border-radius:50%;background:var(--gold);
+  }
+  .topbar .meta{
+    font-size:12.5px;
+    opacity:.9;
+    text-align:right;
+  }
+  .wrap{
+    max-width:760px;
+    margin:0 auto;
+    padding:18px 14px 60px;
+  }
+  .card{
+    background:var(--card-bg);
+    border:1px solid var(--border);
+    border-radius:14px;
+    padding:20px;
+    margin-bottom:16px;
+    box-shadow:0 1px 3px rgba(0,0,0,0.04);
+  }
+  h1{font-size:20px;margin:0 0 4px;color:var(--text);}
+  h2{font-size:17px;margin:0 0 10px;color:var(--text);}
+  h3{font-size:15px;margin:0 0 8px;color:var(--text);}
+  p{line-height:1.55;color:var(--text-muted);margin:0 0 10px;}
+  .badge-gold{
+    display:inline-block;
+    background:var(--gold-light);
+    color:#8a6d00;
+    font-size:11.5px;
+    font-weight:700;
+    padding:3px 10px;
+    border-radius:20px;
+    letter-spacing:.4px;
+    margin-bottom:10px;
+  }
+  label{
+    display:block;
+    font-size:13px;
+    font-weight:600;
+    color:var(--text);
+    margin:12px 0 5px;
+  }
+  input[type="text"]{
+    width:100%;
+    padding:11px 12px;
+    border-radius:9px;
+    border:1.5px solid var(--border);
+    background:var(--bg);
+    color:var(--text);
+    font-size:15px;
+  }
+  input[type="text"]:focus{outline:none;border-color:var(--gold);}
+  .btn{
+    display:inline-block;
+    background:var(--navy);
+    color:#fff;
+    border:none;
+    padding:12px 20px;
+    border-radius:9px;
+    font-size:15px;
+    font-weight:700;
+    cursor:pointer;
+    letter-spacing:.2px;
+  }
+  .btn:active{transform:translateY(1px);}
+  .btn.gold{background:var(--gold); color:#2b2200;}
+  .btn.outline{background:transparent; color:var(--navy); border:1.5px solid var(--navy);}
+  .btn:disabled{opacity:.45; cursor:not-allowed;}
+  .btn-row{display:flex; gap:10px; flex-wrap:wrap; margin-top:14px;}
+  .qtype-tag{
+    display:inline-block;
+    font-size:10.5px;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:.5px;
+    padding:3px 9px;
+    border-radius:6px;
+    margin-bottom:10px;
+  }
+  .tag-mc{background:#E6EEFB; color:#1D4C9B;}
+  .tag-mcc{background:#F2E9FB; color:#6B2FA8;}
+  .tag-tf{background:#FEEBD9; color:#A85C00;}
+  .tag-match{background:#DFF5E8; color:#1E7A46;}
+  :root[data-theme="dark"] .tag-mc, @media (prefers-color-scheme: dark){ }
+  .qnum{font-size:13px; color:var(--text-muted); margin-bottom:4px;}
+  .option{
+    display:flex;
+    align-items:flex-start;
+    gap:10px;
+    padding:11px 12px;
+    border:1.5px solid var(--border);
+    border-radius:10px;
+    margin-bottom:8px;
+    cursor:pointer;
+    transition:border-color .15s, background .15s;
+  }
+  .option:hover{border-color:var(--gold);}
+  .option.selected{border-color:var(--gold); background:var(--gold-light);}
+  .option input{margin-top:2px;}
+  .stmt-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    padding:10px 12px;
+    border:1.5px solid var(--border);
+    border-radius:10px;
+    margin-bottom:8px;
+  }
+  .stmt-text{flex:1; font-size:14px; color:var(--text);}
+  .tf-toggle{display:flex; gap:6px; flex-shrink:0;}
+  .tf-btn{
+    padding:6px 12px;
+    border-radius:7px;
+    border:1.5px solid var(--border);
+    background:transparent;
+    color:var(--text-muted);
+    font-size:12.5px;
+    font-weight:700;
+    cursor:pointer;
+  }
+  .tf-btn.active-true{background:var(--success-bg); color:var(--success); border-color:var(--success);}
+  .tf-btn.active-false{background:var(--danger-bg); color:var(--danger); border-color:var(--danger);}
+  .match-row{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:10px 12px;
+    border:1.5px solid var(--border);
+    border-radius:10px;
+    margin-bottom:8px;
+    flex-wrap:wrap;
+  }
+  .match-left{flex:1; min-width:150px; font-size:14px; color:var(--text);}
+  .match-right select{
+    padding:8px 10px;
+    border-radius:8px;
+    border:1.5px solid var(--border);
+    background:var(--bg);
+    color:var(--text);
+    font-size:13.5px;
+    min-width:190px;
+  }
+  .progress-bar{
+    height:8px;
+    background:var(--border);
+    border-radius:6px;
+    overflow:hidden;
+    margin:10px 0 4px;
+  }
+  .progress-fill{
+    height:100%;
+    background:linear-gradient(90deg, var(--gold), var(--navy));
+    transition:width .25s;
+  }
+  .progress-label{font-size:12px; color:var(--text-muted); margin-bottom:8px;}
+  .nav-dots{display:flex; flex-wrap:wrap; gap:6px; margin:10px 0 4px;}
+  .dot-btn{
+    width:30px; height:30px;
+    border-radius:8px;
+    border:1.5px solid var(--border);
+    background:var(--bg);
+    color:var(--text-muted);
+    font-size:12px;
+    font-weight:700;
+    cursor:pointer;
+  }
+  .dot-btn.answered{background:var(--success-bg); color:var(--success); border-color:var(--success);}
+  .dot-btn.current{border-color:var(--gold); box-shadow:0 0 0 2px var(--gold-light);}
+  .modal-overlay{
+    position:fixed; inset:0;
+    background:rgba(4,8,16,.72);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    z-index:999;
+    padding:20px;
+  }
+  .modal-overlay.show{display:flex;}
+  .modal-box{
+    background:var(--card-bg);
+    border:2px solid var(--danger);
+    border-radius:14px;
+    padding:26px 22px;
+    max-width:380px;
+    text-align:center;
+  }
+  .modal-box .icon{font-size:42px; margin-bottom:6px;}
+  .modal-box h3{color:var(--danger); font-size:18px;}
+  .modal-box p{color:var(--text); font-size:14px;}
+  .modal-box .count{
+    display:inline-block;
+    background:var(--danger-bg);
+    color:var(--danger);
+    font-weight:800;
+    padding:4px 14px;
+    border-radius:20px;
+    margin:8px 0 14px;
+  }
+  .result-score{
+    text-align:center;
+    padding:20px 10px;
+  }
+  .result-score .num{
+    font-size:44px;
+    font-weight:800;
+    color:var(--navy);
+  }
+  :root[data-theme="dark"] .result-score .num{color:var(--gold);}
+  .compare-row{
+    display:flex;
+    gap:12px;
+    margin-top:16px;
+  }
+  .compare-box{
+    flex:1;
+    text-align:center;
+    padding:14px 8px;
+    border-radius:12px;
+    border:1.5px solid var(--border);
+  }
+  .compare-box .lbl{font-size:12px; color:var(--text-muted); font-weight:700; text-transform:uppercase; letter-spacing:.4px;}
+  .compare-box .val{font-size:26px; font-weight:800; color:var(--navy); margin-top:4px;}
+  :root[data-theme="dark"] .compare-box .val{color:var(--gold);}
+  .delta-up{color:var(--success);}
+  .delta-down{color:var(--danger);}
+  .materi-section{margin-bottom:16px;}
+  .formula-box{
+    background:var(--gold-light);
+    border-left:4px solid var(--gold);
+    padding:10px 14px;
+    border-radius:8px;
+    font-weight:700;
+    color:var(--navy);
+    margin:8px 0 12px;
+    font-size:14.5px;
+  }
+  :root[data-theme="dark"] .formula-box{color:var(--gold);}
+  .foot-note{
+    text-align:center;
+    font-size:11.5px;
+    color:var(--text-muted);
+    margin-top:20px;
+  }
+  .id-summary{
+    display:flex; gap:14px; flex-wrap:wrap;
+    background:var(--bg);
+    border-radius:10px;
+    padding:10px 14px;
+    margin-bottom:14px;
+    font-size:13px;
+  }
+  .id-summary b{color:var(--text);}
+  .warn-banner{
+    background:var(--danger-bg);
+    color:var(--danger);
+    border-radius:10px;
+    padding:8px 12px;
+    font-size:12.5px;
+    font-weight:600;
+    margin-bottom:14px;
+    display:none;
+  }
+  .warn-banner.show{display:block;}
+  .hidden{display:none !important;}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand"><span class="dot"></span> BIMBINGAN BELAJAR BIONIC</div>
+  <div class="meta" id="topbarMeta">Kuis Peluang Kejadian Majemuk</div>
+</div>
+
+<div class="wrap">
+
+  <!-- SCREEN: IDENTITAS -->
+  <div id="screen-identitas" class="card">
+    <span class="badge-gold">MATEMATIKA PEMINATAN</span>
+    <h1>Kuis Peluang Kejadian Majemuk</h1>
+    <p>Alur pengerjaan: <b>Pretest</b> &rarr; <b>Materi Ringkas</b> &rarr; <b>Post-Test</b>. Terdiri dari 10 soal dengan variasi tipe: pilihan ganda, pilihan ganda kompleks, benar/salah, dan menjodohkan.</p>
+    <p style="font-size:12.5px; color:var(--danger);">&#9888; Selama ujian berlangsung, jangan berpindah tab/aplikasi. Sistem akan mencatat pelanggaran apabila Anda keluar dari halaman ini.</p>
+    <label for="inpNis">Nomor Induk Siswa (NIS)</label>
+    <input type="text" id="inpNis" placeholder="Contoh: 2526104" inputmode="numeric">
+    <label for="inpNama">Nama Lengkap</label>
+    <input type="text" id="inpNama" placeholder="Tulis nama lengkap Anda">
+    <div class="btn-row">
+      <button class="btn gold" onclick="startPretest()">Mulai Pretest &rarr;</button>
+    </div>
+  </div>
+
+  <!-- SCREEN: EXAM (shared for pretest & posttest) -->
+  <div id="screen-exam" class="card hidden">
+    <div class="id-summary">
+      <div>NIS: <b id="sumNis">-</b></div>
+      <div>Nama: <b id="sumNama">-</b></div>
+      <div>Tahap: <b id="sumTahap">-</b></div>
+    </div>
+    <div class="warn-banner" id="examWarnBanner">&#9888; <span id="examWarnText"></span></div>
+    <div class="progress-label"><span id="progLabel">Soal 1 dari 10</span></div>
+    <div class="progress-bar"><div class="progress-fill" id="progFill" style="width:10%"></div></div>
+    <div class="nav-dots" id="navDots"></div>
+
+    <div id="questionArea" style="margin-top:14px;"></div>
+
+    <div class="btn-row">
+      <button class="btn outline" id="btnPrev" onclick="prevQuestion()">&larr; Sebelumnya</button>
+      <button class="btn outline" id="btnNext" onclick="nextQuestion()">Berikutnya &rarr;</button>
+      <button class="btn gold hidden" id="btnSubmit" onclick="submitExam()">Selesai & Kumpulkan</button>
+    </div>
+  </div>
+
+  <!-- SCREEN: MATERI -->
+  <div id="screen-materi" class="card hidden">
+    <span class="badge-gold">MATERI RINGKAS</span>
+    <h1>Peluang Kejadian Majemuk</h1>
+    <p>Pretest selesai. Pelajari ringkasan materi berikut sebelum melanjutkan ke Post-Test.</p>
+
+    <div class="materi-section">
+      <h3>1. Gabungan Dua Kejadian (Union)</h3>
+      <p>Gabungan kejadian A dan B adalah kejadian munculnya A saja, B saja, atau keduanya.</p>
+      <div class="formula-box">P(A &cup; B) = P(A) + P(B) &minus; P(A &cap; B)</div>
+    </div>
+
+    <div class="materi-section">
+      <h3>2. Kejadian Saling Lepas</h3>
+      <p>Dua kejadian tidak dapat terjadi bersamaan, sehingga A &cap; B = &empty;.</p>
+      <div class="formula-box">P(A &cup; B) = P(A) + P(B)</div>
+    </div>
+
+    <div class="materi-section">
+      <h3>3. Kejadian Saling Bebas</h3>
+      <p>Terjadinya A tidak memengaruhi peluang terjadinya B.</p>
+      <div class="formula-box">P(A &cap; B) = P(A) &times; P(B)</div>
+    </div>
+
+    <div class="materi-section">
+      <h3>4. Peluang Bersyarat</h3>
+      <p>Peluang A dengan syarat B telah terjadi (berguna untuk kasus tanpa pengembalian).</p>
+      <div class="formula-box">P(A|B) = P(A &cap; B) / P(B)</div>
+    </div>
+
+    <div class="materi-section">
+      <h3>5. Komplemen Kejadian</h3>
+      <p>Peluang tidak terjadinya A; efisien untuk soal "paling sedikit satu".</p>
+      <div class="formula-box">P(A') = 1 &minus; P(A)</div>
+    </div>
+
+    <p style="font-size:12.5px;">&#128196; Materi lengkap beserta contoh soal dan pembahasan tersedia pada PDF pendamping "Materi Peluang Kejadian Majemuk - Bimbingan Belajar Bionic" yang diberikan oleh pengajar.</p>
+
+    <div class="btn-row">
+      <button class="btn gold" onclick="startPosttest()">Lanjut ke Post-Test &rarr;</button>
+    </div>
+  </div>
+
+  <!-- SCREEN: HASIL -->
+  <div id="screen-hasil" class="card hidden">
+    <span class="badge-gold">HASIL AKHIR</span>
+    <h1>Rekap Nilai</h1>
+    <div class="id-summary">
+      <div>NIS: <b id="hasilNis">-</b></div>
+      <div>Nama: <b id="hasilNama">-</b></div>
+    </div>
+    <div class="compare-row">
+      <div class="compare-box">
+        <div class="lbl">Pretest</div>
+        <div class="val" id="valPretest">-</div>
+      </div>
+      <div class="compare-box">
+        <div class="lbl">Post-Test</div>
+        <div class="val" id="valPosttest">-</div>
+      </div>
+      <div class="compare-box">
+        <div class="lbl">Peningkatan</div>
+        <div class="val" id="valDelta">-</div>
+      </div>
+    </div>
+    <div class="compare-row" style="margin-top:10px;">
+      <div class="compare-box" style="flex:1;">
+        <div class="lbl">Pelanggaran Tercatat</div>
+        <div class="val" id="valPelanggaran" style="color:var(--danger);">0</div>
+      </div>
+    </div>
+    <p style="margin-top:16px; font-size:12.5px;">Hasil ini merupakan rekap otomatis dari sistem kuis Bimbingan Belajar Bionic. Silakan laporkan hasil ini kepada pengajar/tutor Anda.</p>
+  </div>
+
+  <div class="foot-note">&copy; Bimbingan Belajar Bionic &mdash; Geluran &bull; Sadang &bull; Sawocangkring &bull; Prambon</div>
+</div>
+
+<!-- VIOLATION MODAL -->
+<div class="modal-overlay" id="violationModal">
+  <div class="modal-box">
+    <div class="icon">&#9888;&#65039;</div>
+    <h3>PELANGGARAN TERDETEKSI</h3>
+    <p>Anda terdeteksi keluar dari aplikasi/tab ujian. Tindakan ini tercatat oleh sistem.</p>
+    <div class="count">Total Pelanggaran: <span id="violationCountText">1</span></div>
+    <p style="font-size:12.5px;">Tetaplah berada pada halaman ini hingga ujian selesai.</p>
+    <button class="btn gold" onclick="closeViolationModal()">Saya Mengerti, Lanjutkan</button>
+  </div>
+</div>
+
+<script>
+/* ===================== DATA SOAL ===================== */
+const QUESTIONS = [
+  {
+    id:1, type:'mc',
+    text:'Sebuah kotak berisi 4 bola merah, 5 bola putih, dan 3 bola hijau. Dua bola diambil sekaligus secara acak. Peluang bahwa kedua bola yang terambil berwarna sama adalah&hellip;',
+    options:['12/66','19/66','22/66','43/66','47/66'],
+    correct:1
+  },
+  {
+    id:2, type:'mc',
+    text:'Dua buah dadu dilempar bersamaan. Peluang munculnya jumlah kedua mata dadu sama dengan 8 <b>atau</b> kedua mata dadu menunjukkan angka kembar adalah&hellip;',
+    options:['5/36','6/36','10/36','11/36','15/36'],
+    correct:2
+  },
+  {
+    id:3, type:'mc',
+    text:'Dari satu set kartu bridge (52 kartu), diambil satu kartu secara acak. Peluang terambil kartu bergambar (King, Queen, atau Jack) <b>atau</b> kartu berlambang Sekop (Spade) adalah&hellip;',
+    options:['12/52','13/52','22/52','25/52','9/26'],
+    correct:2
+  },
+  {
+    id:4, type:'mc',
+    text:'Sebuah kotak berisi 8 kartu bernomor 1 sampai 8. Diambil 3 kartu secara berturut-turut <b>tanpa pengembalian</b>. Peluang ketiga kartu yang terambil semuanya bernomor genap adalah&hellip;',
+    options:['1/56','1/14','1/8','3/28','4/8'],
+    correct:1
+  },
+  {
+    id:5, type:'mcc',
+    text:'Diketahui P(A) = 0,4 , P(B) = 0,5 , dan P(A &cap; B) = 0,2. Pilihlah <b>semua</b> pernyataan yang BENAR!',
+    options:[
+      'A dan B merupakan kejadian yang saling bebas',
+      'A dan B merupakan kejadian yang saling lepas',
+      'P(A &cup; B) = 0,7',
+      'P(A|B) = 0,4'
+    ],
+    correct:[0,2,3]
+  },
+  {
+    id:6, type:'mcc',
+    text:'Pada pelemparan dua buah dadu bersamaan, pilihlah <b>semua</b> pasangan kejadian A dan B berikut yang merupakan kejadian SALING LEPAS!',
+    options:[
+      'A = jumlah mata dadu 7 ; B = jumlah mata dadu 10',
+      'A = dadu pertama menunjukkan angka genap ; B = dadu kedua menunjukkan angka ganjil',
+      'A = jumlah mata dadu kurang dari 4 ; B = jumlah mata dadu lebih dari 10',
+      'A = kedua dadu menunjukkan angka kembar ; B = jumlah mata dadu ganjil'
+    ],
+    correct:[0,2,3]
+  },
+  {
+    id:7, type:'tf',
+    text:'Kotak A berisi 3 bola merah dan 2 bola putih. Kotak B berisi 4 bola merah dan 1 bola putih. Diambil satu bola secara acak dari Kotak A, kemudian satu bola dari Kotak B. Tentukan BENAR atau SALAH untuk setiap pernyataan berikut!',
+    statements:[
+      {text:'Pengambilan bola dari Kotak A dan Kotak B merupakan dua kejadian yang saling bebas.', answer:true},
+      {text:'Peluang mendapatkan bola merah dari Kotak A dan bola merah dari Kotak B adalah 12/25.', answer:true},
+      {text:'Peluang mendapatkan bola putih dari kedua kotak sekaligus adalah 3/25.', answer:false},
+      {text:'Peluang mendapatkan paling sedikit satu bola merah (dari salah satu kotak atau keduanya) adalah 23/25.', answer:true},
+      {text:'Peluang mendapatkan bola merah dari Kotak A adalah 2/5.', answer:false}
+    ]
+  },
+  {
+    id:8, type:'tf',
+    text:'Sebuah kotak berisi 10 kartu bernomor 1 sampai 10. Diambil satu kartu secara acak. Misalkan A = kejadian terambil bilangan prima, B = kejadian terambil bilangan genap. Tentukan BENAR atau SALAH untuk setiap pernyataan berikut!',
+    statements:[
+      {text:'Kejadian A dan B tidak saling lepas karena memiliki irisan, yaitu {2}.', answer:true},
+      {text:'P(A &cup; B) = 4/5.', answer:true},
+      {text:'P(A|B) = 1/5.', answer:true},
+      {text:'A dan B merupakan kejadian yang saling bebas.', answer:false},
+      {text:'P(A &cap; B) = 2/10.', answer:false}
+    ]
+  },
+  {
+    id:9, type:'match',
+    text:'Jodohkan istilah pada kolom kiri dengan rumus yang sesuai pada kolom kanan!',
+    left:[
+      'Gabungan dua kejadian saling lepas',
+      'Dua kejadian saling bebas',
+      'Peluang bersyarat',
+      'Komplemen kejadian',
+      'Gabungan dua kejadian sembarang'
+    ],
+    rightOptions:[
+      'P(A &cap; B) = P(A) &times; P(B)',
+      "P(A') = 1 &minus; P(A)",
+      'P(A|B) = P(A &cap; B) / P(B)',
+      'P(A &cup; B) = P(A) + P(B)',
+      'P(A &cup; B) = P(A) + P(B) &minus; P(A &cap; B)'
+    ],
+    correctMap:[3,0,2,1,4]
+  },
+  {
+    id:10, type:'match',
+    text:'Jodohkan skenario soal pada kolom kiri dengan pendekatan penyelesaian yang paling tepat pada kolom kanan!',
+    left:[
+      'Mengambil 2 kartu berturut-turut tanpa pengembalian, ingin diketahui peluang keduanya As',
+      'Melempar koin dan dadu bersamaan, ingin diketahui peluang kejadian tertentu muncul bersama',
+      'Ingin diketahui peluang paling sedikit satu dari beberapa percobaan berhasil',
+      'Dua kejadian yang tidak mungkin terjadi bersamaan dalam satu kali pelemparan dadu'
+    ],
+    rightOptions:[
+      'Perkalian peluang kejadian saling bebas',
+      'Pendekatan komplemen (1 &minus; peluang gagal semua)',
+      'Peluang bersyarat (pengambilan berurutan)',
+      'Penjumlahan langsung (kejadian saling lepas)'
+    ],
+    correctMap:[2,0,1,3]
+  }
+];
+
+/* ===================== STATE ===================== */
+let nis = '', nama = '';
+let currentStage = null; // 'pretest' | 'posttest'
+let currentIndex = 0;
+let answers = { pretest:{}, posttest:{} };
+let scores = { pretest:null, posttest:null };
+let violationCount = 0;
+let examActive = false;
+let lastViolationTime = 0;
+
+/* ===================== IDENTITAS & NAVIGASI TAHAP ===================== */
+function startPretest(){
+  const nisVal = document.getElementById('inpNis').value.trim();
+  const namaVal = document.getElementById('inpNama').value.trim();
+  if(!nisVal || !namaVal){
+    alert('Mohon isi NIS dan Nama terlebih dahulu.');
+    return;
+  }
+  nis = nisVal; nama = namaVal;
+  document.getElementById('sumNis').textContent = nis;
+  document.getElementById('sumNama').textContent = nama;
+  document.getElementById('hasilNis').textContent = nis;
+  document.getElementById('hasilNama').textContent = nama;
+  document.getElementById('topbarMeta').textContent = nama + ' (' + nis + ')';
+
+  currentStage = 'pretest';
+  currentIndex = 0;
+  answers.pretest = {};
+  showScreen('exam');
+  document.getElementById('sumTahap').textContent = 'PRETEST';
+  buildNavDots();
+  renderQuestion();
+  examActive = true;
+}
+
+function startPosttest(){
+  currentStage = 'posttest';
+  currentIndex = 0;
+  answers.posttest = {};
+  showScreen('exam');
+  document.getElementById('sumTahap').textContent = 'POST-TEST';
+  buildNavDots();
+  renderQuestion();
+  examActive = true;
+}
+
+function showScreen(name){
+  ['identitas','exam','materi','hasil'].forEach(s=>{
+    document.getElementById('screen-'+s).classList.toggle('hidden', s!==name);
+  });
+  window.scrollTo(0,0);
+}
+
+/* ===================== RENDER SOAL ===================== */
+function buildNavDots(){
+  const wrap = document.getElementById('navDots');
+  wrap.innerHTML = '';
+  QUESTIONS.forEach((q,i)=>{
+    const b = document.createElement('button');
+    b.className = 'dot-btn';
+    b.textContent = i+1;
+    b.onclick = ()=>{ currentIndex=i; renderQuestion(); };
+    wrap.appendChild(b);
+  });
+}
+
+function updateNavDots(){
+  const wrap = document.getElementById('navDots');
+  [...wrap.children].forEach((b,i)=>{
+    b.classList.toggle('current', i===currentIndex);
+    b.classList.toggle('answered', isAnswered(i));
+  });
+}
+
+function isAnswered(i){
+  const q = QUESTIONS[i];
+  const a = answers[currentStage][q.id];
+  if(a===undefined) return false;
+  if(q.type==='mc') return a!==undefined && a!==null;
+  if(q.type==='mcc') return Array.isArray(a) && a.length>0;
+  if(q.type==='tf') return a && Object.keys(a).length===q.statements.length;
+  if(q.type==='match') return a && Object.keys(a).length===q.left.length;
+  return false;
+}
+
+function renderQuestion(){
+  const q = QUESTIONS[currentIndex];
+  const area = document.getElementById('questionArea');
+  document.getElementById('progLabel').textContent = 'Soal '+(currentIndex+1)+' dari '+QUESTIONS.length;
+  document.getElementById('progFill').style.width = (((currentIndex+1)/QUESTIONS.length)*100)+'%';
+
+  let tagLabel = {mc:'Pilihan Ganda', mcc:'Pilihan Ganda Kompleks', tf:'Benar / Salah', match:'Menjodohkan'}[q.type];
+  let tagClass = {mc:'tag-mc', mcc:'tag-mcc', tf:'tag-tf', match:'tag-match'}[q.type];
+
+  let html = '<span class="qtype-tag '+tagClass+'">'+tagLabel+'</span>';
+  html += '<div class="qnum">Soal No. '+(currentIndex+1)+'</div>';
+  html += '<h3 style="font-weight:600; line-height:1.5;">'+q.text+'</h3>';
+
+  const savedAnswer = answers[currentStage][q.id];
+
+  if(q.type==='mc'){
+    q.options.forEach((opt,i)=>{
+      const sel = savedAnswer===i ? 'selected' : '';
+      html += '<div class="option '+sel+'" onclick="selectMC('+q.id+','+i+')">'
+            + '<input type="radio" name="mc'+q.id+'" '+(savedAnswer===i?'checked':'')+' readonly>'
+            + '<span>'+opt+'</span></div>';
+    });
+  } else if(q.type==='mcc'){
+    html += '<p style="font-size:12px; margin-top:-4px;">(Boleh pilih lebih dari satu jawaban)</p>';
+    q.options.forEach((opt,i)=>{
+      const arr = savedAnswer || [];
+      const sel = arr.includes(i) ? 'selected' : '';
+      html += '<div class="option '+sel+'" onclick="selectMCC('+q.id+','+i+')">'
+            + '<input type="checkbox" '+(arr.includes(i)?'checked':'')+' readonly>'
+            + '<span>'+opt+'</span></div>';
+    });
+  } else if(q.type==='tf'){
+    q.statements.forEach((st,i)=>{
+      const ans = savedAnswer ? savedAnswer[i] : undefined;
+      html += '<div class="stmt-row">'
+            + '<div class="stmt-text">'+(i+1)+'. '+st.text+'</div>'
+            + '<div class="tf-toggle">'
+            + '<button class="tf-btn '+(ans===true?'active-true':'')+'" onclick="selectTF('+q.id+','+i+',true)">BENAR</button>'
+            + '<button class="tf-btn '+(ans===false?'active-false':'')+'" onclick="selectTF('+q.id+','+i+',false)">SALAH</button>'
+            + '</div></div>';
+    });
+  } else if(q.type==='match'){
+    q.left.forEach((ltext,i)=>{
+      const ans = savedAnswer ? savedAnswer[i] : undefined;
+      html += '<div class="match-row">'
+            + '<div class="match-left">'+(i+1)+'. '+ltext+'</div>'
+            + '<div class="match-right"><select onchange="selectMatch('+q.id+','+i+',this.value)">'
+            + '<option value="">-- pilih pasangan --</option>'
+            + q.rightOptions.map((r,ri)=>'<option value="'+ri+'" '+(ans===ri?'selected':'')+'>'+String.fromCharCode(65+ri)+'. '+r+'</option>').join('')
+            + '</select></div></div>';
+    });
+  }
+
+  area.innerHTML = html;
+  document.getElementById('btnPrev').style.visibility = currentIndex===0 ? 'hidden' : 'visible';
+  const isLast = currentIndex===QUESTIONS.length-1;
+  document.getElementById('btnNext').classList.toggle('hidden', isLast);
+  document.getElementById('btnSubmit').classList.toggle('hidden', !isLast);
+  updateNavDots();
+}
+
+function selectMC(qid, idx){
+  answers[currentStage][qid] = idx;
+  renderQuestion();
+}
+function selectMCC(qid, idx){
+  const cur = answers[currentStage][qid] || [];
+  const pos = cur.indexOf(idx);
+  if(pos>=0) cur.splice(pos,1); else cur.push(idx);
+  answers[currentStage][qid] = cur;
+  renderQuestion();
+}
+function selectTF(qid, stIdx, val){
+  const cur = answers[currentStage][qid] || {};
+  cur[stIdx] = val;
+  answers[currentStage][qid] = cur;
+  renderQuestion();
+}
+function selectMatch(qid, leftIdx, val){
+  const cur = answers[currentStage][qid] || {};
+  if(val==='') delete cur[leftIdx]; else cur[leftIdx] = parseInt(val);
+  answers[currentStage][qid] = cur;
+}
+
+function prevQuestion(){ if(currentIndex>0){ currentIndex--; renderQuestion(); } }
+function nextQuestion(){ if(currentIndex<QUESTIONS.length-1){ currentIndex++; renderQuestion(); } }
+
+/* ===================== PENILAIAN ===================== */
+function gradeStage(stage){
+  const ans = answers[stage];
+  let total = 0;
+  QUESTIONS.forEach(q=>{
+    const a = ans[q.id];
+    let questionScore = 0;
+    if(q.type==='mc'){
+      questionScore = (a===q.correct) ? 10 : 0;
+    } else if(q.type==='mcc'){
+      if(Array.isArray(a)){
+        const sortedA = [...a].sort().join(',');
+        const sortedC = [...q.correct].sort().join(',');
+        questionScore = (sortedA===sortedC) ? 10 : 0;
+      }
+    } else if(q.type==='tf'){
+      if(a){
+        let correctCount = 0;
+        q.statements.forEach((st,i)=>{ if(a[i]===st.answer) correctCount++; });
+        questionScore = (correctCount/q.statements.length)*10;
+      }
+    } else if(q.type==='match'){
+      if(a){
+        let correctCount = 0;
+        q.correctMap.forEach((c,i)=>{ if(a[i]===c) correctCount++; });
+        questionScore = (correctCount/q.correctMap.length)*10;
+      }
+    }
+    total += questionScore;
+  });
+  return Math.round(total*10)/10;
+}
+
+function submitExam(){
+  const unanswered = QUESTIONS.filter((q,i)=>!isAnswered(i)).length;
+  if(unanswered>0){
+    if(!confirm('Masih ada '+unanswered+' soal yang belum dijawab. Tetap kumpulkan?')) return;
+  }
+  const score = gradeStage(currentStage);
+  scores[currentStage] = score;
+  examActive = false;
+
+  if(currentStage==='pretest'){
+    showScreen('materi');
+  } else {
+    document.getElementById('valPretest').textContent = scores.pretest;
+    document.getElementById('valPosttest').textContent = scores.posttest;
+    const delta = Math.round((scores.posttest - scores.pretest)*10)/10;
+    const deltaEl = document.getElementById('valDelta');
+    deltaEl.textContent = (delta>=0?'+':'')+delta;
+    deltaEl.className = 'val ' + (delta>=0 ? 'delta-up' : 'delta-down');
+    document.getElementById('valPelanggaran').textContent = violationCount;
+    showScreen('hasil');
+  }
+}
+
+/* ===================== ANTI-CHEAT / DETEKSI PELANGGARAN ===================== */
+function logViolation(){
+  const now = Date.now();
+  if(now - lastViolationTime < 800) return; // debounce agar tidak double count
+  lastViolationTime = now;
+  violationCount++;
+  document.getElementById('violationCountText').textContent = violationCount;
+  document.getElementById('violationModal').classList.add('show');
+  const banner = document.getElementById('examWarnBanner');
+  document.getElementById('examWarnText').textContent = 'Pelanggaran ke-'+violationCount+' tercatat: Anda meninggalkan halaman ujian.';
+  banner.classList.add('show');
+}
+function closeViolationModal(){
+  document.getElementById('violationModal').classList.remove('show');
+}
+document.addEventListener('visibilitychange', function(){
+  if(examActive && document.hidden){ logViolation(); }
+});
+window.addEventListener('blur', function(){
+  if(examActive){ logViolation(); }
+});
+</script>
+</body>
+</html>
